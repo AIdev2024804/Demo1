@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authors and Right Owners Reward Simulator</title>
+    
+        
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            margin: 0;
+            padding: 20px;
+            color: #1d1d1f;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            height: 500px;
+            border-collapse: collapse;
+            background: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f5f5f7;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #888;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007aff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #005fcb;
+        }
+        .form-group label {
+            font-size: 14px;
+            color: #555;
+        }
+        .scroll {
+            overflow-x: auto;
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .language-selector img {
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="language-selector">
+    <img src="flag-en.png" alt="English" onclick="setLanguage('en')">
+    <img src="flag-fr.png" alt="Français" onclick="setLanguage('fr')">
+    <img src="flag-de.png" alt="Deutsch" onclick="setLanguage('de')">
+    <img src="flag-es.png" alt="Español" onclick="setLanguage('es')">
+    <img src="flag-cn.png" alt="中文" onclick="setLanguage('cn')">
+</div>
+
+<h1>Authors and Right Owners Reward Simulator</h1>
+
+<div class="form-group">
+    <label for="prompt">Enter your prompt:</label>
+    <input type="text" id="prompt" name="prompt" style="width: 100%; padding: 8px;" placeholder="Exotic fish flying over the moon landscape, earth in the sky">
+</div>
+
+<div class="form-group">
+    <button id="generate-button" style="padding: 10px 20px; background-color: hwb(293 30% 31%); color: white; border:  hwb(293 15% 66%); cursor: pointer;">Generate</button>
+    <img src="info-icon.png" alt="Info" title="Generate new image. Clic for more details." onclick="alert('This simulator does not include a real AI generator like Midjourney or Dall-e.');">
+</div>
+
+<div id="content">
+    <div class="form-group">
+        <label for="generated-image">Generated Image:</label>
+        <div class="image-container">
+            <img id="generated-image" src="generated-image.png" alt="Generated image will appear here">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="subscription">User Monthly Subscription (€ / month):</label>
+        <input type="number" id="subscription" name="subscription" value="12" style="width: 100px;" onchange="updateTable()">
+        <img src="info-icon.png" alt="Info" title="Monthly subscription fee paid per user. Clic for more details." onclick="alert('Monthly subscription fee for users. Pricing examples : Adobe Firefly plans start at $4.99. Midjourney starts at $10 per month. DALL·E 3 is included with a ChatGPT Plus subscription, priced at $20 per month. Getty Edify is €45 for 25 image generations, but includes a legal protection for commercial use of generated images.');">
+    </div>
+
+    <div class="form-group">
+        <label for="num-generations">Number of Image Generations per Month:</label>
+        <input type="number" id="num-generations" name="num-generations" value="60" style="width: 100px;" onchange="updateTable()">
+        <img src="info-icon.png" alt="Info" title="Number of image generations done by one user on average per month. Clic for more details." onclick="alert('Number of generations done by one user on average per month.  Examples : Adobe Firefly basic plan includes a credit for 100 image generations per month. Midjourney basic plan includes 200 image generations per month.');">
+    </div>
+
+    <div class="form-group">
+        <label for="a-share">Authors share (%):</label>
+        <input type="number" id="a-share" name="a-share" value="5" style="width: 100px;" onchange="updateTable()">
+        <img src="info-icon.png" alt="Info" title="Percentage of subscription allocated to authors. Clic for more details" onclick="alert('Percentage of subscription allocated to authors. Typical examples of royalty percentages for authors are 5-15% for printed books. Combined royalties for performers and songwriters are 15-30% of net revenues from sales of CDs, downloads and streaming. Photographers and image creators get 15-45% of stock revenues.');">
+    </div>
+
+    <div class="form-group">
+        <label for="ro-share">Right Owners Share (%):</label>
+        <input type="number" id="ro-share" name="ro-share" value="10" style="width: 100px;" onchange="updateTable()">
+        <img src="info-icon.png" alt="Info" title="Percentage of subscription allocated to right owner. Clic for more details" onclick="alert('Percentage of subscription allocated to right owner. Typical examples of royalty percentages retained by Music Collective Management Organizations like ASCAP, BMI, or SACEM is 2-8% of of net revenues from sales of CDs, downloads and streaming. Image stocks retain 55-85% of stock revenues.');">
+    </div>
+
+    <div class="form-group">
+        <label for="num-users">Subscribers (in thousands):</label>
+        <input type="number" id="num-users" name="num-users" value="500" style="width: 100px;" onchange="updateTable()">
+        <img src="info-icon.png" alt="Info" title="Number of paid users in thousands. Clic for more details" onclick="alert('Number of paid users in thousands.  There is no clear public figures of paid subscribers for AI image generation platforms. Midjourney is probably the leader with 2 to 5 million paying subscribers.');">
+    </div>
+    
+    <div class="form-group">
+        <label for="data-table">Authors and Right Owners Rewards:</label>
+    </div>
+
+    <div class="scroll">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Gen <img src="info-icon.png" alt="Info" title="Generated content."onclick="alert('Generated content.');"></th>
+                    <th>Monthly<br>Subscription <img src="info-icon.png" alt="Info" title="Average payment per month and per paid user." onclick="alert('Average payment per month and per paid user.');"></th>
+                    <th>Paid per<br>Gen <img src="info-icon.png" alt="Info" title="Payment per generated image. Clic for more details." onclick="alert('Payment per generated image = User Monthly Subscription / Number of Image Generations per month.');"></th>
+                    <th>Authors & RO<br>Share <img src="info-icon.png" alt="Info" title="Share for Authors and Right Owners. Clic for more details." onclick="alert('Share for Authors and Right Owners = Paid per Gen x Authors plus Right Owners share%.');"></th>
+                    <th>Training<br>Data <img src="info-icon.png" alt="Info" title="Data used for training the generative AI. Clic for more details." onclick="alert('Training Data. Original images made by photographers or illustrators are used for training the generative AI that produces the Generated Images.');"></th>
+                    <th>Attribution<br>(%) <img src="info-icon.png" alt="Info" title="Percentage attribution. Clic for more details." onclick="alert('Percentage attribution. This ratio measures the usefulness of this particular training data for the Generated image.');"></th>
+                    <th>Training Data<br>Reward <img src="info-icon.png" alt="Info" title="Reward for training data usage. Clic for more details." onclick="alert('Reward for training data usage = Share for Authors and Right Owners x Attribution%.');"></th>
+                    <th>Author <img src="info-icon.png" alt="Info" title="Author of the training data. Clic for more details." onclick="alert('Author of the training data. Person who created the original image used to train the generative model.');"></th>
+                    <th>Right Owner <img src="info-icon.png" alt="Info" title="Right Owner of the training data. Clic for more details." onclick="alert('Right Owner of the training data. Organization in charge of managing the rights of the original image used to train the generative model.');"></th>
+                    <th>Author<br>Month Reward <img src="info-icon.png" alt="Info" title="Monthly reward for Author. Clic for more details." onclick="alert('Estimate of the Monthly reward for Author = Training Data Reward x Number of Paid Subscribers / Authors plus Right Owners share x Author Share .');"></th>
+                    <th>Right Owner<br>Month Reward <img src="info-icon.png" alt="Info" title="Monthly reward for Right Owner. Clic for more details." onclick="alert('Estimate of the Monthly reward for Right Owner = Training Data Reward x Number of Paid Subscribers / Authors plus Right Owners share x Right Owner Share .');"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="gen1.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish1.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>34%</td>
+                    <td class="training-data-reward">1.02 c€</td>
+                    <td><img src="author1.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro1.png" alt="Right Owner" style="width: 50px;"></td>
+                    <td class="a-month-reward">1,700 €</td>
+                    <td class="ro-month-reward">3,400 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen2.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish2.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>21%</td>
+                    <td class="training-data-reward">0.63 c€</td>
+                    <td><img src="author2.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro2.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">1,050 €</td>
+                    <td class="ro-month-reward">2,100 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen3.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish3.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>12%</td>
+                    <td class="training-data-reward">0.36 c€</td>
+                    <td><img src="author3.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro3.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">600 €</td>
+                    <td class="ro-month-reward">1,200 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen4.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish4.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>11%</td>
+                    <td class="training-data-reward">0.33 c€</td>
+                    <td><img src="author4.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro4.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">550 €</td>
+                    <td class="ro-month-reward">1,100 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen5.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish5.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>9%</td>
+                    <td class="training-data-reward">0.27 c€</td>
+                    <td><img src="author5.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro5.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">450 €</td>
+                    <td class="ro-month-reward">900 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen6.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish6.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>6%</td>
+                    <td class="training-data-reward">0.18 c€</td>
+                    <td><img src="author6.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro6.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">300 €</td>
+                    <td class="ro-month-reward">600 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen7.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish7.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>3%</td>
+                    <td class="training-data-reward">0.09 c€</td>
+                    <td><img src="author7.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro7.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">150 €</td>
+                    <td class="ro-month-reward">300 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen8.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish8.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>2%</td>
+                    <td class="training-data-reward">0.06 c€</td>
+                    <td><img src="author8.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro8.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">100 €</td>
+                    <td class="ro-month-reward">200 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen9.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish9.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>1%</td>
+                    <td class="training-data-reward">0.03 c€</td>
+                    <td><img src="author9.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro9.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">50 €</td>
+                    <td class="ro-month-reward">100 €</td>
+                </tr>
+                <tr>
+                    <td><img src="gen10.png" alt="Gen" style="width: 50px;"></td>
+                    <td class="paid-per-month">12 €</td>
+                    <td class="paid-per-gen">0.20 €</td>
+                    <td class="aro-share">3.00 c€</td>
+                    <td><img src="fish10.png" alt="Training Data" style="width: 50px;"></td>
+                    <td>1%</td>
+                    <td class="training-data-reward">0.03 c€</td>
+                    <td><img src="author10.png" alt="Author" style="width: 50px;"></td>
+                    <td><img src="ro10.png" alt="Author" style="width: 50px;"></td>
+                    <td class="a-month-reward">50 €</td>
+                    <td class="ro-month-reward">100 €</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-group">
+        <label for="data-table"><br> <br>Regulatory Report:</label>
+    </div>
+
+    <div id="report">
+        <div class="scroll">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>Datasets <img src="info-icon.png" alt="Info" title="Datasets Providers."onclick="alert('Datasets Providers.');"></th>
+                        <th>Datasets<br>Methodology <img src="info-icon.png" alt="Info" title="Datasets Methodology. Clic for more details" onclick="alert('Datasets Methodology to ensure the compliancy with the Union right. Legal basis for data collection.');"></th>
+                        <th>Datasets<br>Description <img src="info-icon.png" alt="Info" title="Datasets Description. Clic for more details." onclick="alert('Datasets Description. Identification and size of the dataset? Data type? List of unique identifier types - ISBN, DOI, ISAN - included? Link to the game data if applicable or, failing that, list of contents (by available identifiers) of the dataset to date with sufficient detail relating to the content to make it easier for rights holders to exercise their rights? For each type of identifier, percentage of items with this identifier?.');"></th>
+                        <th>Prompts<br>Description <img src="info-icon.png" alt="Info" title="Prompts Description. Clic for more details." onclick="alert('Prompts Description. Specify if prompts can be recorded and used for training of the model.');"></th>
+                        <th>Prompts<br>Methodology <img src="info-icon.png" alt="Info" title="Prompts Methodology. Clic for more details." onclick="alert('Prompts Methodology. Method to assess whether the prompt reproduces protected data? Method to neutralize this data if necessary?');"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="ro1.png" alt="Gen" style="width: 50px;"></td>
+                        <td class="DatasetMethodology">Guarantee of data license<br>from right owner.</td>
+                        <td class="DatasetDescription">Size: 136 Go<br>Type: images, description, GPS<br>Identification: Right owner id standard</td>
+                        <td class="PromptDescription">Prompts can be recorded and<br>used for training purposes</td>
+                        <td class="PromptMethodology">Personal and sensitive data<br>are removed from prompts</td>
+                    </tr>
+                    <tr>
+                        <td><img src="ro2.png" alt="Gen" style="width: 50px;"></td>
+                        <td class="DatasetMethodology">Guarantee of data license<br>from right owner.</td>
+                        <td class="DatasetDescription">Size: 228 Go<br>Type: images, metadata<br>Identification: Right owner id standard</td>
+                        <td class="PromptDescription">Prompts can be recorded and<br>used for training purposes</td>
+                        <td class="PromptMethodology">Personal and sensitive data<br>are removed from prompts</td>
+                    </tr>
+                    <tr>
+                        <td><img src="ro3.png" alt="Gen" style="width: 50px;"></td>
+                        <td class="DatasetMethodology">Guarantee of data license<br>from right owner.</td>
+                        <td class="DatasetDescription">Size: 189 Go<br>Type: images, GPS, metadata<br>Identification: Right owner id standard</td>
+                        <td class="PromptDescription">Prompts can be recorded and<br>used for training purposes</td>
+                        <td class="PromptMethodology">Personal and sensitive data<br>are removed from prompts</td>
+                    </tr>
+                    <tr>
+                        <td><img src="ro4.png" alt="Gen" style="width: 50px;"></td>
+                        <td class="DatasetMethodology">Guarantee of data license<br>from right owner.</td>
+                        <td class="DatasetDescription">Size: 95 Go<br>Type: images, metadata<br>Identification: Right owner id standard</td>
+                        <td class="PromptDescription">Prompts can be recorded and<br>used for training purposes</td>
+                        <td class="PromptMethodology">Personal and sensitive data<br>are removed from prompts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('generate-button').addEventListener('click', () => {
+        document.getElementById('content').style.display = 'block';
+    });
+
+    function updateTable() {
+        const subscription = parseFloat(document.getElementById('subscription').value);
+        const aroSharePercentage = (parseFloat(document.getElementById('a-share').value) + parseFloat(document.getElementById('ro-share').value)) / 100;
+        const aSharePercentage = parseFloat(document.getElementById('a-share').value) / 100;
+        const roSharePercentage = parseFloat(document.getElementById('ro-share').value) / 100;
+        const numGenerations = parseFloat(document.getElementById('num-generations').value);
+        const numUsers = parseFloat(document.getElementById('num-users').value) * 1000;
+
+        const rows = document.querySelectorAll('#data-table tbody tr');
+        rows.forEach(row => {
+            const paidPerMonthCell = row.querySelector('.paid-per-month');
+            const paidPerGenCell = row.querySelector('.paid-per-gen');
+            const aroShareCell = row.querySelector('.aro-share');
+            const trainingDataRewardCell = row.querySelector('.training-data-reward');
+            const aMonthRewardCell = row.querySelector('.a-month-reward');
+            const roMonthRewardCell = row.querySelector('.ro-month-reward');
+            const attribPercentage = parseFloat(row.cells[5].textContent) / 100;
+
+            // Update Paid per Month dynamically
+            paidPerMonthCell.textContent = `${subscription.toFixed(0)} €`;
+
+            // Update Paid per Gen dynamically
+            const paidPerGen = subscription / numGenerations;
+            paidPerGenCell.textContent = `${paidPerGen.toFixed(2)} €`;
+
+            // Update A & RO Share dynamically
+            const aroShare = paidPerGen * aroSharePercentage * 100;
+            aroShareCell.textContent = `${aroShare.toFixed(2)} c€`;
+
+            // Update Training Data Reward dynamically
+            const trainingDataReward = aroShare * attribPercentage;
+            trainingDataRewardCell.textContent = `${trainingDataReward.toFixed(2)} c€`;
+
+            // Update A Month Reward dynamically
+            const aMonthReward = (trainingDataReward / 100) * numUsers / aroSharePercentage * aSharePercentage;
+            aMonthRewardCell.textContent = aMonthReward.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €';
+
+            // Update RO Month Reward dynamically
+            const roMonthReward = (trainingDataReward / 100) * numUsers / aroSharePercentage * roSharePercentage;
+            roMonthRewardCell.textContent = roMonthReward.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €';
+        });
+    }
+    const translations = {
+        en: {
+            title: "Authors and Right Owners Reward Simulator",
+            "prompt-label": "Enter your prompt:",
+            "generate-button": "Generate"
+        },
+        fr: {
+            title: "Simulateur de Récompenses pour Auteurs et Ayants Droit",
+            "prompt-label": "Entrez votre demande:",
+            "generate-button": "Générer"
+        },
+        de: {
+            title: "Belohnungssimulator für Autoren und Rechteinhaber",
+            "prompt-label": "Geben Sie Ihre Eingabe ein:",
+            "generate-button": "Generieren"
+        },
+        es: {
+            title: "Simulador de Recompensas para Autores y Propietarios de Derechos",
+            "prompt-label": "Introduce tu solicitud:",
+            "generate-button": "Generar"
+        },
+        cn: {
+            title: "作者和权利所有者奖励模拟器",
+            "prompt-label": "输入您的提示：",
+            "generate-button": "生成"
+        }
+    };
+
+    function setLanguage(lang) {
+        document.getElementById('title').textContent = translations[lang].title;
+        document.getElementById('prompt-label').textContent = translations[lang]["prompt-label"];
+        document.getElementById('generate-button').textContent = translations[lang]["generate-button"];
+    }
+</script>
+
+</body>
+</html>
